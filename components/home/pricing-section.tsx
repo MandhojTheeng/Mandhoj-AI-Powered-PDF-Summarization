@@ -67,23 +67,24 @@ const PricingCard: React.FC<PricingPlan> = (plan) => {
     const { id, name, price, description, features, paymentLink } = plan;
     
     return (
-        <div className="relative w-full max-w-xs">
+        <div className="relative w-full max-w-xs group">
             <div 
                 className={cn(
-                    "relative flex flex-col h-full gap-3 z-10 p-6 rounded-xl border border-gray-200 rounded-2xl bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300",
+                    "relative flex flex-col h-full gap-3 z-10 p-6 rounded-xl border border-gray-200 rounded-2xl bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-300",
+                    "hover:shadow-lg hover:scale-[1.02] hover:border-rose-200 hover:shadow-rose-100",
                     id === 'pro' && "border-rose-500 border-2 shadow-md"
                 )}
             >
                 {/* Plan header */}
                 <div className="flex flex-col gap-1">
-                    <h3 className="text-lg font-bold capitalize">{name}</h3>
+                    <h3 className="text-lg font-bold capitalize group-hover:text-rose-600 transition-colors">{name}</h3>
                     <p className="text-sm text-gray-600">{description}</p>
                 </div>
                 
                 {/* Price display */}
                 <div className="mt-2">
                     <div className="flex items-baseline">
-                        <span className="text-3xl font-bold">${price}</span>
+                        <span className="text-3xl font-bold group-hover:text-rose-600 transition-colors">${price}</span>
                         <span className="ml-1 text-gray-500 text-sm">/month</span>
                     </div>
                 </div>
@@ -92,7 +93,7 @@ const PricingCard: React.FC<PricingPlan> = (plan) => {
                 <div className="mt-4 space-y-2">
                     {features.map((feature, index) => (
                         <div key={index} className="flex items-center gap-2">
-                            <Check className="w-4 h-4 text-rose-500 flex-shrink-0" />
+                            <Check className="w-4 h-4 text-rose-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                             <span className="text-gray-700 text-sm">{feature}</span>
                         </div>
                     ))}
@@ -109,7 +110,7 @@ const PricingCard: React.FC<PricingPlan> = (plan) => {
                                 : "bg-gray-100 text-gray-900 hover:bg-gray-200"
                         )}
                     >
-                        Buy Now <ArrowRight size={16} className="inline ml-1" />
+                        Buy Now <ArrowRight size={16} className="inline ml-1 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </div>
