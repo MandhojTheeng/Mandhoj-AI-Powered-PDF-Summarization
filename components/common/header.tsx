@@ -1,9 +1,11 @@
 import { FileText } from 'lucide-react';
 import { Button } from '../ui/button';
 import NavLink from './nav-link';
+import { useAuth, SignInButton, SignOutButton, UserButton } from '@clerk/nextjs';
 
 export default function Header() {
-    const isLoggedIn = false;
+    const { isSignedIn } = useAuth();
+    
     return (
         <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
             <nav className="container flex items-center justify-between py-4 lg:px-8 px-4 mx-auto">
@@ -17,21 +19,22 @@ export default function Header() {
 
                 <div className="hidden md:flex lg:justify-center gap-6 lg:gap-10 items-center">
                     <NavLink href="/#pricing" className="text-gray-600 hover:text-rose-500 transition-colors">Pricing</NavLink>
-                    {isLoggedIn && <NavLink href="/dashboard" className="text-gray-600 hover:text-rose-500 transition-colors">Your summaries</NavLink>}
+                    {isSignedIn && <NavLink href="/dashboard" className="text-gray-600 hover:text-rose-500 transition-colors">Your summaries</NavLink>}
                 </div>
 
                 <div className="flex lg:justify-end lg:flex-1 items-center gap-4">
-                    {isLoggedIn ? (
+                    {isSignedIn ? (
                         <div className="flex gap-4 items-center">
                             <NavLink href="/upload">
                                 <Button variant="outline" size="sm" className="border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition-colors">
                                     Upload PDF
                                 </Button>
                             </NavLink>
+                            <UserButton afterSignOutUrl="/" />
                         </div>
                     ) : (
                         <div className="flex items-center gap-4">
-                            <NavLink href="/sign-in">
+                            <SignInButton mode="modal">
                                 <Button 
                                     variant="ghost" 
                                     size="sm" 
@@ -39,7 +42,7 @@ export default function Header() {
                                 >
                                     Sign In
                                 </Button>
-                            </NavLink>
+                            </SignInButton>
                             <NavLink href="/#pricing">
                                 <Button 
                                     size="sm" 
