@@ -3,7 +3,10 @@
 import { z } from "zod";
 import { useUploadThing } from "@/utils/uploadthing";
 import UploadFormInput from "./upload-form-input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+// Import toast for type checking
+import { toast } from "sonner";
+import { ClientOnly } from "@/components/providers/client-only-provider";
 
 const Schema = z.object({
   file: z
@@ -19,75 +22,99 @@ const Schema = z.object({
 });
 
 export default function UploadForm() {
-  const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Ensure component is mounted before using toast
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Safe toast function that only runs on client
+  const showToast = (type: 'success' | 'error' | 'info', message: string) => {
+    if (isMounted) {
+      if (type === 'success') toast.success(message);
+      if (type === 'error') toast.error(message);
+      if (type === 'info') toast.info(message);
+    }
+  };
 
   const { startUpload, isUploading: isUploadthingUploading } = useUploadThing("pdfUploader", {
     onClientUploadComplete: (res) => {
       console.log("Upload Completed!", res);
       setIsUploading(false);
-      setError(null);
-      setUploadSuccess(true);
+      showToast('success', "File uploaded successfully!");
     },
     onUploadError: (error) => {
       console.error("Error occurred while uploading:", error);
-      setError(`Upload failed: ${error.message || "Unknown error"}`);
+      showToast('error', `Upload failed: ${error.message || "Unknown error"}`);
       setIsUploading(false);
     },
     onUploadBegin: (fileName) => {
       console.log("Upload has begun for:", fileName);
       setIsUploading(true);
-      setError(null);
-      setUploadSuccess(false);
+      showToast('info', `Uploading ${fileName}...`);
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setUploadSuccess(false);
+  const handleFileChange = (file: File | null) => {
+    setSelectedFile(file);
+  };
 
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get("file") as File;
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      showToast('error', "Please select a file first");
+      return;
+    }
 
-    const validatedFields = Schema.safeParse({ file });
+    if (!selectedFile || selectedFile.size === 0) {
+      showToast('error', "Please select a valid PDF file");
+      return;
+    }
+
+    // Validate file before uploading
+    const validatedFields = Schema.safeParse({ file: selectedFile });
 
     if (!validatedFields.success) {
       const errorMessage = validatedFields.error.flatten().fieldErrors.file?.[0] ?? "Invalid File";
       console.error("Validation error:", errorMessage);
-      setError(errorMessage);
+      showToast('error', errorMessage);
       return;
     }
 
+    // Optimize file if possible (for PDFs we can't do much optimization client-side)
     try {
-      // Upload the file using uploadthing
-      const resp = await startUpload([file]);
+      // Show immediate feedback to user
+      setIsUploading(true);
+      
+      // Start upload with optimized settings
+      const resp = await startUpload([selectedFile]);
+      
       if (!resp) {
-        setError("Upload failed: No response received");
+        setIsUploading(false);
+        showToast('error', "Upload failed: No response received");
         return;
       }
-      
+
       console.log("Upload successful:", resp);
+      // The onClientUploadComplete callback will handle success state
     } catch (err) {
       console.error("Upload error:", err);
-      setError(`Upload failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setIsUploading(false);
+      showToast('error', `Upload failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   };
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto">
-      {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
-          {error}
-        </div>
-      )}
-      {uploadSuccess && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md text-green-600">
-          File uploaded successfully!
-        </div>
-      )}
-      <UploadFormInput onSubmit={handleSubmit} isUploading={isUploading || isUploadthingUploading} />
-    </div>
+    <ClientOnly>
+      <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto">
+        <UploadFormInput 
+          onFileChange={handleFileChange} 
+          onUpload={handleUpload}
+          isUploading={isUploading || isUploadthingUploading} 
+        />
+      </div>
+    </ClientOnly>
   );
 }

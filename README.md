@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Overview
+
+This project allows users to upload and enhance PDFs using AI to extract insights, summarize content, and unlock productivity.
+
+## Features
+
+- Upload and animate PDFs with interactive UI.
+- AI-powered PDF enhancement and analysis.
+- Real-time updates and optimizations.
 
 ## Getting Started
 
@@ -16,9 +24,25 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Provide detailed steps for setting up the project locally, including prerequisites and installation commands.
+
+## Usage
+
+Explain how to use the main features of the application, possibly with screenshots or examples.
+
+## Contributing
+
+Outline how others can contribute to the project, including guidelines for submitting issues or pull requests.
+
+## License
+
+Specify the license under which the project is distributed.
+
+## Contact Information
+
+Provide contact details or links for further inquiries or support.
 
 ## Learn More
 

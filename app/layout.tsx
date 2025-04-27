@@ -2,7 +2,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import Header from '@/components/common/header';
-import { Toaster } from "sonner";
+import { ToasterProvider } from '@/components/providers/toaster-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body className={inter.className}>
           <Header />
           {children}
-          <Toaster />
+          <ToasterProvider />
         </body>
       </html>
     </ClerkProvider>
