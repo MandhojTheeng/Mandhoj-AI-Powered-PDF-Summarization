@@ -34,7 +34,11 @@ export const ourFileRouter = {
       console.log("Upload completed for user ID:", metadata.userId);
       return {
         userId: metadata.userId,
-        file: file.url,
+        file: {
+          url: file.url,
+          name: file.name,
+          ufsUrl: file.url, // Using the same URL for now, you can modify this as needed
+        },
       };
     }),
 } satisfies FileRouter;
